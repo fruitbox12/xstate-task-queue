@@ -48,7 +48,6 @@ export default function Home() {
           left: 0,
           height: "100%",
           width: "100%",
-          filter: 'blur(.03em)',
 
           border: "none",
           zIndex: -1,
@@ -61,7 +60,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="relative">
-        <Box py="10">
+        <Box py="10" style={{background: "white"}}>
           <Container maxW="3xl">
 
             <Box borderWidth={1} p="4" mt="4">
