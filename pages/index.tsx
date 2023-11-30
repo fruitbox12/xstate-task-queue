@@ -91,7 +91,7 @@ export default function Home() {
 
                           <Badge
                             colorScheme={
-                              threadType === "Promise" ? "blue" : "teal"
+                              threadType === "TestRun" ? "blue" : "teal"
                             }
                           >
                             {threadType}
@@ -178,7 +178,7 @@ export default function Home() {
                         Type of the thread to launch
                       </FormLabel>
 
-                      <RadioGroup name="thread-type" defaultValue="Promise">
+                      <RadioGroup name="thread-type" defaultValue="TestRun">
                         <HStack spacing="24px">
                           {ThreadType.options.map((type) => (
                             <Radio key={type} value={type}>
