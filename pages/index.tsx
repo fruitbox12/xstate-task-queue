@@ -58,7 +58,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="relative">
+      <main className="relative" style={{ background-color: "white"}}>
         <Box py="10">
           <Container maxW="3xl">
 
