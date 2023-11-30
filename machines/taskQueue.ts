@@ -1,6 +1,6 @@
 import { assign, createMachine } from "xstate";
-import { TaskStatus, TaskType } from "~/types";
-import { taskMachine } from "./task";
+import { ThreadStatus, ThreadType } from "~/types";
+import { threadMachine } from "./thread";
 
 function waitForTimeout() {
   const minTimeout = 3_000;
@@ -10,15 +10,15 @@ function waitForTimeout() {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-interface Task {
+interface Thread {
   id: number;
-  status: TaskStatus;
+  status: ThreadStatus;
   priority: number;
   timestamp: number;
-  taskType: TaskType;
+  threadType: ThreadType;
 }
 
-async function taskAsPromise() {
+async function threadAsPromise() {
   await waitForTimeout();
 
   const shouldThrow = Math.random() < 0.5;
@@ -27,36 +27,36 @@ async function taskAsPromise() {
   }
 }
 
-export const taskQueueMachine =
+export const threadQueueMachine =
   /** @xstate-layout N4IgpgJg5mDOIC5QBUCGsDWACAjgVzAIGIBBCCLAF3W0oHtcCCBtABgF1FQAHO2AS0r86AOy4gAHogC0ARgDMrAHTyAnKwAsANgDsAJnUBWdaoA0IAJ4zZq+UtkaNs2TtmH5Ora1sBfH+bRMRkIwIgBVbghUSjAqGgByWCxuACdhNMoLNk4kEF4BIVFxKQR5PR0lVUMNeQ09by95dy1zKwQ5W3tHZ1d3T295PwCaYIIlAEkIABtQ7PF8wWExXJL5Oz0NAA5NHUNWBybNvVbENaUvJzqj1Q3nWSGQQOx8EKUABRS6AGM4AREoIgQURgJT8EQANzoGBBT1GII+31+YKgCDBkK+0SW2TmuQWhWWoFWdi21VYOkce02GkMhhOpVqKk2WipGjJdVUng0D1hLzGCJ+sD+ALAKU+KSU3Cm0QAZnQUgBbJQ8pjwz4CoWoiHfTGibEceZ8RZFFanYmbUnk6msKmGY6WRAuOw6WyqVRaPRaLa2a1+fwgER0CBwcTKkIGgpLYoyPTOJR6QwuTZu+SyVj7PTyOnSLSqc5UrSGTayAusYxaLTcka8kGTGbho0EyTWLTrBM6JMt1PpzP2hDVFSsFs6NQ5t1pvSVoLV95qpH-ev4qMIS5dNzaPaqTbDjR0lxKIuyLe1BzqLSyDa+nxAA */
   createMachine(
     {
-      id: "Task queue",
+      id: "Thread queue",
 
-      tsTypes: {} as import("./taskQueue.typegen").Typegen0,
+      tsTypes: {} as import("./threadQueue.typegen").Typegen0,
 
       context: {
         index: 0,
         queue: [],
-        tasks: {},
-        currentTaskId: undefined,
+        threads: {},
+        currentThreadId: undefined,
       },
 
       schema: {
         context: {} as {
           index: number;
           queue: number[];
-          tasks: Record<number, Task>;
-          currentTaskId: number | undefined;
+          threads: Record<number, Thread>;
+          currentThreadId: number | undefined;
         },
         events: {} as
           | {
-              type: "Add task to queue";
+              type: "Add thread to queue";
               priority: number;
-              taskType: TaskType;
+              threadType: ThreadType;
             }
           | {
-              type: "Update task's priority";
+              type: "Update thread's priority";
               id: number;
               newPriority: number;
             },
@@ -66,47 +66,47 @@ export const taskQueueMachine =
         Idle: {
           always: {
             target: "Processing",
-            cond: "A task is available for processing",
-            actions: "Take task from queue",
+            cond: "A thread is available for processing",
+            actions: "Take thread from queue",
           },
         },
 
         Processing: {
           invoke: {
-            src: "Process task",
+            src: "Process thread",
 
             onDone: {
               target: "Idle",
               actions: [
-                "Mark task as done",
-                "Reset currently processed task id",
+                "Mark thread as done",
+                "Reset currently processed thread id",
               ],
             },
 
             onError: {
               target: "Idle",
               actions: [
-                "Mark task as failed",
-                "Reset currently processed task id",
+                "Mark thread as failed",
+                "Reset currently processed thread id",
               ],
             },
           },
 
-          entry: "Mark task as being processed",
+          entry: "Mark thread as being processed",
         },
       },
 
       initial: "Idle",
 
       on: {
-        "Add task to queue": {
-          actions: ["Push task to queue", "Reorder queue"],
+        "Add thread to queue": {
+          actions: ["Push thread to queue", "Reorder queue"],
           internal: true,
         },
 
-        "Update task's priority": {
-          actions: ["Assign new task's priority", "Reorder queue"],
-          cond: "Task is in queue",
+        "Update thread's priority": {
+          actions: ["Assign new thread's priority", "Reorder queue"],
+          cond: "Thread is in queue",
           internal: true,
         },
       },
@@ -117,127 +117,127 @@ export const taskQueueMachine =
     },
     {
       actions: {
-        "Push task to queue": assign(
-          ({ index, queue, tasks }, { priority, taskType }) => {
+        "Push thread to queue": assign(
+          ({ index, queue, threads }, { priority, threadType }) => {
             const nextIndex = index + 1;
 
             return {
               index: nextIndex,
               queue: [...queue, nextIndex],
-              tasks: {
-                ...tasks,
+              threads: {
+                ...threads,
                 [nextIndex]: {
                   id: nextIndex,
                   priority,
                   status: "waiting for processing" as const,
                   timestamp: Number(new Date()),
-                  taskType,
+                  threadType,
                 },
               },
             };
           }
         ),
         "Reorder queue": assign({
-          queue: ({ queue, tasks }) =>
+          queue: ({ queue, threads }) =>
             [...queue].sort((firstId, secondId) => {
-              const firstTaskPriority = tasks[firstId].priority;
-              const secondTaskPriority = tasks[secondId].priority;
+              const firstThreadPriority = threads[firstId].priority;
+              const secondThreadPriority = threads[secondId].priority;
 
-              if (firstTaskPriority === secondTaskPriority) {
+              if (firstThreadPriority === secondThreadPriority) {
                 // Smallest id first
                 return firstId - secondId;
               }
 
               // Highest priority first
-              return secondTaskPriority - firstTaskPriority;
+              return secondThreadPriority - firstThreadPriority;
             }),
         }),
-        "Take task from queue": assign({
-          currentTaskId: ({ queue }) => queue[0],
+        "Take thread from queue": assign({
+          currentThreadId: ({ queue }) => queue[0],
           queue: ({ queue }) => queue.slice(1),
         }),
-        "Mark task as being processed": assign({
-          tasks: ({ tasks, currentTaskId }) => {
-            if (currentTaskId === undefined) {
+        "Mark thread as being processed": assign({
+          threads: ({ threads, currentThreadId }) => {
+            if (currentThreadId === undefined) {
               throw new Error(
-                "Can not run this action without a defined currentTaskId"
+                "Can not run this action without a defined currentThreadId"
               );
             }
 
             return {
-              ...tasks,
-              [currentTaskId]: {
-                ...tasks[currentTaskId],
+              ...threads,
+              [currentThreadId]: {
+                ...threads[currentThreadId],
                 status: "processing" as const,
               },
             };
           },
         }),
-        "Mark task as done": assign({
-          tasks: ({ tasks, currentTaskId }) => {
-            if (currentTaskId === undefined) {
+        "Mark thread as done": assign({
+          threads: ({ threads, currentThreadId }) => {
+            if (currentThreadId === undefined) {
               throw new Error(
-                "Can not run this action without a defined currentTaskId"
+                "Can not run this action without a defined currentThreadId"
               );
             }
 
             return {
-              ...tasks,
-              [currentTaskId]: {
-                ...tasks[currentTaskId],
+              ...threads,
+              [currentThreadId]: {
+                ...threads[currentThreadId],
                 status: "done" as const,
               },
             };
           },
         }),
-        "Mark task as failed": assign({
-          tasks: ({ tasks, currentTaskId }) => {
-            if (currentTaskId === undefined) {
+        "Mark thread as failed": assign({
+          threads: ({ threads, currentThreadId }) => {
+            if (currentThreadId === undefined) {
               throw new Error(
-                "Can not run this action without a defined currentTaskId"
+                "Can not run this action without a defined currentThreadId"
               );
             }
 
             return {
-              ...tasks,
-              [currentTaskId]: {
-                ...tasks[currentTaskId],
+              ...threads,
+              [currentThreadId]: {
+                ...threads[currentThreadId],
                 status: "errored" as const,
               },
             };
           },
         }),
-        "Assign new task's priority": assign({
-          tasks: ({ tasks }, { id, newPriority }) => ({
-            ...tasks,
+        "Assign new thread's priority": assign({
+          threads: ({ threads }, { id, newPriority }) => ({
+            ...threads,
             [id]: {
-              ...tasks[id],
+              ...threads[id],
               priority: newPriority,
             },
           }),
         }),
-        "Reset currently processed task id": assign({
-          currentTaskId: (_context, _event) => undefined,
+        "Reset currently processed thread id": assign({
+          currentThreadId: (_context, _event) => undefined,
         }),
       },
       services: {
-        "Process task": ({ tasks, currentTaskId }) => {
-          if (currentTaskId === undefined) {
-            throw new Error("currentTaskId must be defined");
+        "Process thread": ({ threads, currentThreadId }) => {
+          if (currentThreadId === undefined) {
+            throw new Error("currentThreadId must be defined");
           }
 
-          const { taskType } = tasks[currentTaskId];
+          const { threadType } = threads[currentThreadId];
 
-          if (taskType === "Promise") {
-            return taskAsPromise();
+          if (threadType === "Promise") {
+            return threadAsPromise();
           }
 
-          return taskMachine;
+          return threadMachine;
         },
       },
       guards: {
-        "A task is available for processing": ({ queue }) => queue.length > 0,
-        "Task is in queue": ({ queue }, { id }) => queue.includes(id),
+        "A thread is available for processing": ({ queue }) => queue.length > 0,
+        "Thread is in queue": ({ queue }, { id }) => queue.includes(id),
       },
     }
   );
