@@ -228,7 +228,7 @@ export const threadQueueMachine =
 
           const { threadType } = threads[currentThreadId];
 
-          if (threadType === "Promise") {
+          if (threadType === "TestRun") {
             return threadAsPromise();
           }
 
