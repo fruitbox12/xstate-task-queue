@@ -92,7 +92,7 @@ export default function Home() {
           borderWidth={1}
           borderRadius="sm"
           p="2"
-          bg="white" // Set the background color to white
+          background="white" // Set the background color to white
         >
                           <Text fontWeight="bold">#{id}</Text>
 
