@@ -6,5 +6,5 @@ export type ThreadStatus =
   | "done"
   | "errored";
 
-export const ThreadType = z.enum(["Promise", "Machine"]);
+export const ThreadType = z.enum(["TestRun", "Deployment"]);
 export type ThreadType = z.infer<typeof ThreadType>;
