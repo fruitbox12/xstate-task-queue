@@ -47,7 +47,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="relative">
-        <Box py="10" style={{background: "white"}}>
+        <Box py="10">
           <Container maxW="3xl">
 
             <Box borderWidth={1} p="4" mt="4">
@@ -220,7 +220,6 @@ export default function Home() {
             </svg>
           </a>
         </Flex><iframe
-        className="responsive-iframe"
         src="https://mesh-xi.vercel.app/"
         style={{
           position: "absolute",
