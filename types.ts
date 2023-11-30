@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-export type TaskStatus =
+export type ThreadStatus =
   | "waiting for processing"
   | "processing"
   | "done"
   | "errored";
 
-export const TaskType = z.enum(["Promise", "Machine"]);
-export type TaskType = z.infer<typeof TaskType>;
+export const ThreadType = z.enum(["Promise", "Machine"]);
+export type ThreadType = z.infer<typeof ThreadType>;
