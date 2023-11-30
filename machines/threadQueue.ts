@@ -13,7 +13,7 @@ function waitForTimeout() {
 interface Thread {
   id: number;
   status: ThreadStatus;
-  priority: number;
+  instances: number;
   timestamp: number;
   threadType: ThreadType;
 }
@@ -52,13 +52,13 @@ export const threadQueueMachine =
         events: {} as
           | {
               type: "Add thread to queue";
-              priority: number;
+              instances: number;
               threadType: ThreadType;
             }
           | {
-              type: "Update thread's priority";
+              type: "Update thread's instances";
               id: number;
-              newPriority: number;
+              newInstances: number;
             },
       },
 
@@ -104,8 +104,8 @@ export const threadQueueMachine =
           internal: true,
         },
 
-        "Update thread's priority": {
-          actions: ["Assign new thread's priority", "Reorder queue"],
+        "Update thread's instances": {
+          actions: ["Assign new thread's instances", "Reorder queue"],
           cond: "Thread is in queue",
           internal: true,
         },
@@ -118,7 +118,7 @@ export const threadQueueMachine =
     {
       actions: {
         "Push thread to queue": assign(
-          ({ index, queue, threads }, { priority, threadType }) => {
+          ({ index, queue, threads }, { instances, threadType }) => {
             const nextIndex = index + 1;
 
             return {
@@ -128,7 +128,7 @@ export const threadQueueMachine =
                 ...threads,
                 [nextIndex]: {
                   id: nextIndex,
-                  priority,
+                  instances,
                   status: "waiting for processing" as const,
                   timestamp: Number(new Date()),
                   threadType,
@@ -140,16 +140,16 @@ export const threadQueueMachine =
         "Reorder queue": assign({
           queue: ({ queue, threads }) =>
             [...queue].sort((firstId, secondId) => {
-              const firstThreadPriority = threads[firstId].priority;
-              const secondThreadPriority = threads[secondId].priority;
+              const firstThreadInstances = threads[firstId].instances;
+              const secondThreadInstances = threads[secondId].instances;
 
-              if (firstThreadPriority === secondThreadPriority) {
+              if (firstThreadInstances === secondThreadInstances) {
                 // Smallest id first
                 return firstId - secondId;
               }
 
-              // Highest priority first
-              return secondThreadPriority - firstThreadPriority;
+              // Highest instances first
+              return secondThreadInstances - firstThreadInstances;
             }),
         }),
         "Take thread from queue": assign({
@@ -207,12 +207,12 @@ export const threadQueueMachine =
             };
           },
         }),
-        "Assign new thread's priority": assign({
-          threads: ({ threads }, { id, newPriority }) => ({
+        "Assign new thread's instances": assign({
+          threads: ({ threads }, { id, newInstances }) => ({
             ...threads,
             [id]: {
               ...threads[id],
-              priority: newPriority,
+              instances: newInstances,
             },
           }),
         }),
