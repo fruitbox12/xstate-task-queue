@@ -60,11 +60,7 @@ export default function Home() {
    <main className="relative">
         <Flex as="nav" align="center" justify="space-between" wrap="wrap" padding="1rem" bg="white" color="black" boxShadow="sm">
           {/* Team Switcher Toggle */}
-          <IconButton
-            icon={<Icon as={FaTeams} />}
-            aria-label="Switch Teams"
-            variant="ghost"
-          />
+          
 
           {/* Title */}
           <Text fontSize="xl" fontWeight="bold">
