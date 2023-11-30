@@ -49,7 +49,6 @@ export default function Home() {
           width: "100%",
           border: "none",
           zIndex: -1,
-        }}
       >
       <Head>
         <title>Create Next App</title>
