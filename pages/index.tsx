@@ -70,29 +70,30 @@ export default function Home() {
 
                 <Text mt="6">Threads:</Text>
 
-                <VStack mt="2" spacing="2" alignItems="stretch">
-                  {threads.length === 0 ? (
-                    <Text>No thread in queue. Add a thread below.</Text>
-                  ) : (
-                    threads.map(({ id, status, instances, threadType }) => {
-                      const badgeColors: Record<
-                        ThreadStatus,
-                        ThemeTypings["colorSchemes"]
-                      > = {
-                        "waiting for processing": "gray",
-                        processing: "orange",
-                        done: "green",
-                        errored: "red",
-                      };
+ <VStack mt="2" spacing="2" alignItems="stretch">
+  {threads.length === 0 ? (
+    <Text>No thread in queue. Add a thread below.</Text>
+  ) : (
+    threads.map(({ id, status, instances, threadType }) => {
+      const badgeColors: Record<
+        ThreadStatus,
+        ThemeTypings["colorSchemes"]
+      > = {
+        "waiting for processing": "gray",
+        processing: "orange",
+        done: "green",
+        errored: "red",
+      };
 
-                      return (
-                        <HStack
-                          key={id}
-                          spacing="2"
-                          borderWidth={1}
-                          borderRadius="sm"
-                          p="2"
-                        >
+      return (
+        <HStack
+          key={id}
+          spacing="2"
+          borderWidth={1}
+          borderRadius="sm"
+          p="2"
+          bg="white" // Set the background color to white
+        >
                           <Text fontWeight="bold">#{id}</Text>
 
                           <Badge colorScheme={badgeColors[status]}>
