@@ -26,17 +26,17 @@ import { useMachine } from "@xstate/react";
 import Head from "next/head";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { taskQueueMachine } from "~/machines/taskQueue";
-import { TaskStatus, TaskType } from "~/types";
+import { threadQueueMachine } from "~/machines/threadQueue";
+import { ThreadStatus, ThreadType } from "~/types";
 
-const addTaskSchema = zfd.formData({
+const addThreadSchema = zfd.formData({
   priority: zfd.numeric(z.number().int().min(1).max(10)),
-  "task-type": zfd.text(TaskType),
+  "thread-type": zfd.text(ThreadType),
 });
 
 export default function Home() {
-  const [state, send] = useMachine(taskQueueMachine);
-  const tasks = Object.values(state.context.tasks);
+  const [state, send] = useMachine(threadQueueMachine);
+  const threads = Object.values(state.context.threads);
 
   return (
     <>
@@ -49,7 +49,7 @@ export default function Home() {
       <main className="relative">
         <Box py="10">
           <Container maxW="3xl">
-            <Heading as="h1">Task queue with XState</Heading>
+            <Heading as="h1">Thread queue with XState</Heading>
 
             <Box borderWidth={1} p="4" mt="4">
               <Box>
@@ -58,15 +58,15 @@ export default function Home() {
                   <Code>{String(state.value)}</Code>
                 </Text>
 
-                <Text mt="6">Tasks:</Text>
+                <Text mt="6">Threads:</Text>
 
                 <VStack mt="2" spacing="2" alignItems="stretch">
-                  {tasks.length === 0 ? (
-                    <Text>No task in queue. Add a task below.</Text>
+                  {threads.length === 0 ? (
+                    <Text>No thread in queue. Add a thread below.</Text>
                   ) : (
-                    tasks.map(({ id, status, priority, taskType }) => {
+                    threads.map(({ id, status, priority, threadType }) => {
                       const badgeColors: Record<
-                        TaskStatus,
+                        ThreadStatus,
                         ThemeTypings["colorSchemes"]
                       > = {
                         "waiting for processing": "gray",
@@ -91,10 +91,10 @@ export default function Home() {
 
                           <Badge
                             colorScheme={
-                              taskType === "Promise" ? "blue" : "teal"
+                              threadType === "Promise" ? "blue" : "teal"
                             }
                           >
-                            {taskType}
+                            {threadType}
                           </Badge>
 
                           <Spacer />
@@ -111,7 +111,7 @@ export default function Home() {
                                 max={10}
                                 onChange={(_, newPriority) => {
                                   send({
-                                    type: "Update task's priority",
+                                    type: "Update thread's priority",
                                     id,
                                     newPriority,
                                   });
@@ -137,20 +137,20 @@ export default function Home() {
                   onSubmit={(event) => {
                     event.preventDefault();
 
-                    const { priority, "task-type": taskType } =
-                      addTaskSchema.parse(
+                    const { priority, "thread-type": threadType } =
+                      addThreadSchema.parse(
                         new FormData(event.target as HTMLFormElement)
                       );
 
                     send({
-                      type: "Add task to queue",
+                      type: "Add thread to queue",
                       priority,
-                      taskType,
+                      threadType,
                     });
                   }}
                 >
                   <VStack spacing="4" alignItems="stretch">
-                    <Heading size="md">Add a task</Heading>
+                    <Heading size="md">Add a thread</Heading>
 
                     <FormControl>
                       <FormLabel>Priority</FormLabel>
@@ -175,12 +175,12 @@ export default function Home() {
 
                     <FormControl as="fieldset">
                       <FormLabel as="legend">
-                        Type of the task to launch
+                        Type of the thread to launch
                       </FormLabel>
 
-                      <RadioGroup name="task-type" defaultValue="Promise">
+                      <RadioGroup name="thread-type" defaultValue="Promise">
                         <HStack spacing="24px">
-                          {TaskType.options.map((type) => (
+                          {ThreadType.options.map((type) => (
                             <Radio key={type} value={type}>
                               {type}
                             </Radio>
@@ -212,7 +212,7 @@ export default function Home() {
           rounded="md"
           shadow="lg"
         >
-          <a href="https://github.com/Devessier/xstate-task-queue">
+          <a href="https://github.com/Devessier/xstate-thread-queue">
             <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
               <path
                 fillRule="evenodd"
