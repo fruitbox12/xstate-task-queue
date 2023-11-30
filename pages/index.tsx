@@ -30,7 +30,7 @@ import { threadQueueMachine } from "~/machines/threadQueue";
 import { ThreadStatus, ThreadType } from "~/types";
 
 const addThreadSchema = zfd.formData({
-  priority: zfd.numeric(z.number().int().min(1).max(10)),
+  instances: zfd.numeric(z.number().int().min(1).max(10)),
   "thread-type": zfd.text(ThreadType),
 });
 
@@ -64,7 +64,7 @@ export default function Home() {
                   {threads.length === 0 ? (
                     <Text>No thread in queue. Add a thread below.</Text>
                   ) : (
-                    threads.map(({ id, status, priority, threadType }) => {
+                    threads.map(({ id, status, instances, threadType }) => {
                       const badgeColors: Record<
                         ThreadStatus,
                         ThemeTypings["colorSchemes"]
@@ -101,19 +101,19 @@ export default function Home() {
 
                           <FormControl w="auto">
                             <HStack spacing="4">
-                              <FormLabel m={0}>Priority</FormLabel>
+                              <FormLabel m={0}>Instances</FormLabel>
 
                               <NumberInput
                                 size="sm"
                                 maxW={16}
-                                value={priority}
+                                value={instances}
                                 min={1}
                                 max={10}
-                                onChange={(_, newPriority) => {
+                                onChange={(_, newInstances) => {
                                   send({
-                                    type: "Update thread's priority",
+                                    type: "Update thread's instances",
                                     id,
-                                    newPriority,
+                                    newInstances,
                                   });
                                 }}
                               >
@@ -137,14 +137,14 @@ export default function Home() {
                   onSubmit={(event) => {
                     event.preventDefault();
 
-                    const { priority, "thread-type": threadType } =
+                    const { instances, "thread-type": threadType } =
                       addThreadSchema.parse(
                         new FormData(event.target as HTMLFormElement)
                       );
 
                     send({
                       type: "Add thread to queue",
-                      priority,
+                      instances,
                       threadType,
                     });
                   }}
@@ -153,10 +153,10 @@ export default function Home() {
                     <Heading size="md">Add a thread</Heading>
 
                     <FormControl>
-                      <FormLabel>Priority</FormLabel>
+                      <FormLabel>Instances</FormLabel>
 
                       <NumberInput
-                        name="priority"
+                        name="instances"
                         defaultValue={1}
                         min={1}
                         max={10}
@@ -169,7 +169,7 @@ export default function Home() {
                       </NumberInput>
 
                       <FormHelperText>
-                        By default the priority is 1. 10 is max priority.
+                        By default the instances is 1. 10 is max instances.
                       </FormHelperText>
                     </FormControl>
 
