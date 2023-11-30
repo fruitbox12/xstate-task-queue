@@ -49,7 +49,6 @@ export default function Home() {
       <main className="relative">
         <Box py="10">
           <Container maxW="3xl">
-            <Heading as="h1">Thread queue with XState</Heading>
 
             <Box borderWidth={1} p="4" mt="4">
               <Box>
