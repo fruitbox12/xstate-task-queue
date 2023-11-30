@@ -5,12 +5,12 @@
         '@@xstate/typegen': true;
         internalEvents: {
           "": { type: "" };
-"done.invoke.Task queue.Processing:invocation[0]": { type: "done.invoke.Task queue.Processing:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
-"error.platform.Task queue.Processing:invocation[0]": { type: "error.platform.Task queue.Processing:invocation[0]"; data: unknown };
+"done.invoke.Thread queue.Processing:invocation[0]": { type: "done.invoke.Thread queue.Processing:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
+"error.platform.Thread queue.Processing:invocation[0]": { type: "error.platform.Thread queue.Processing:invocation[0]"; data: unknown };
 "xstate.init": { type: "xstate.init" };
         };
         invokeSrcNameMap: {
-          "Process task": "done.invoke.Task queue.Processing:invocation[0]";
+          "Process thread": "done.invoke.Thread queue.Processing:invocation[0]";
         };
         missingImplementations: {
           actions: never;
@@ -19,24 +19,24 @@
           services: never;
         };
         eventsCausingActions: {
-          "Assign new task's priority": "Update task's priority";
-"Mark task as being processed": "";
-"Mark task as done": "done.invoke.Task queue.Processing:invocation[0]";
-"Mark task as failed": "error.platform.Task queue.Processing:invocation[0]";
-"Push task to queue": "Add task to queue";
-"Reorder queue": "Add task to queue" | "Update task's priority";
-"Reset currently processed task id": "done.invoke.Task queue.Processing:invocation[0]" | "error.platform.Task queue.Processing:invocation[0]";
-"Take task from queue": "";
+          "Assign new thread's priority": "Update thread's priority";
+"Mark thread as being processed": "";
+"Mark thread as done": "done.invoke.Thread queue.Processing:invocation[0]";
+"Mark thread as failed": "error.platform.Thread queue.Processing:invocation[0]";
+"Push thread to queue": "Add thread to queue";
+"Reorder queue": "Add thread to queue" | "Update thread's priority";
+"Reset currently processed thread id": "done.invoke.Thread queue.Processing:invocation[0]" | "error.platform.Thread queue.Processing:invocation[0]";
+"Take thread from queue": "";
         };
         eventsCausingDelays: {
           
         };
         eventsCausingGuards: {
-          "A task is available for processing": "";
-"Task is in queue": "Update task's priority";
+          "A thread is available for processing": "";
+"Thread is in queue": "Update thread's priority";
         };
         eventsCausingServices: {
-          "Process task": "";
+          "Process thread": "";
         };
         matchesStates: "Idle" | "Processing";
         tags: never;
