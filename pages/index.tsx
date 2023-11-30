@@ -57,8 +57,22 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="relative">
-        <Box py="10" style={{background: "white"}}>
+   <main className="relative">
+        <Flex as="nav" align="center" justify="space-between" wrap="wrap" padding="1rem" bg="white" color="black" boxShadow="sm">
+          {/* Team Switcher Toggle */}
+          <IconButton
+            icon={<Icon as={FaTeams} />}
+            aria-label="Switch Teams"
+            variant="ghost"
+          />
+
+          {/* Title */}
+          <Text fontSize="xl" fontWeight="bold">
+            Thread Runner Management
+          </Text>
+
+          {/* Rest of your navbar items */}
+        </Flex>        <Box py="10" style={{background: "white"}}>
           <Container maxW="3xl">
 <h1>Thread Runner Management</h1>
             <Box borderWidth={1} p="4" mt="4">
