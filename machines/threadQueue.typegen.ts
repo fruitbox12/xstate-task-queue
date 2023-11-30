@@ -19,12 +19,12 @@
           services: never;
         };
         eventsCausingActions: {
-          "Assign new thread's priority": "Update thread's priority";
+          "Assign new thread's instances": "Update thread's instances";
 "Mark thread as being processed": "";
 "Mark thread as done": "done.invoke.Thread queue.Processing:invocation[0]";
 "Mark thread as failed": "error.platform.Thread queue.Processing:invocation[0]";
 "Push thread to queue": "Add thread to queue";
-"Reorder queue": "Add thread to queue" | "Update thread's priority";
+"Reorder queue": "Add thread to queue" | "Update thread's instances";
 "Reset currently processed thread id": "done.invoke.Thread queue.Processing:invocation[0]" | "error.platform.Thread queue.Processing:invocation[0]";
 "Take thread from queue": "";
         };
@@ -33,7 +33,7 @@
         };
         eventsCausingGuards: {
           "A thread is available for processing": "";
-"Thread is in queue": "Update thread's priority";
+"Thread is in queue": "Update thread's instances";
         };
         eventsCausingServices: {
           "Process thread": "";
